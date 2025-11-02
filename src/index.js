@@ -31,7 +31,8 @@ let theme = createTheme({
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>
-    <BrowserRouter basename="/ARVR_Project">
+    {/* Use PUBLIC_URL when the app is served from a subpath, fallback to root */}
+    <BrowserRouter basename={process.env.PUBLIC_URL || "/"}>
       <ScrollToTop />
       <App />
     </BrowserRouter>

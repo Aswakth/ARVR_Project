@@ -15,7 +15,6 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import LogoWithText from "../../assets/images/arvrlogo.svg";
 
 const drawerWidth = 240;
 
@@ -51,9 +50,7 @@ const Header = () => {
               alignItems: { md: "center", sm: "center", xs: "center" },
               width: { lg: "100%", md: "100%", sm: "100%", xs: "100%" },
             }}
-          >
-            <img src={LogoWithText} alt="logo" width="100%"></img>
-          </Box>
+          />
         </Link>
 
         <List
@@ -140,23 +137,9 @@ const Header = () => {
                     alignItems: { md: "center", sm: "center", xs: "center" },
                     width: { lg: "50%", sm: "50%", xs: "80%" },
                   }}
-                >
-                  <img src={LogoWithText} alt="logo" width="100%"></img>
-                </Box>
+                />
               </Link>
-              <Link to="/login" className="link">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  sx={{
-                    display: { lg: "none", xs: "flex", md: "flex", sm: "flex" },
-                    width: "100%",
-                    fontSize: "15px",
-                  }}
-                >
-                  Login
-                </Button>
-              </Link>
+              {/* Login button removed per request */}
             </Box>
             <Box
               sx={{
@@ -168,11 +151,7 @@ const Header = () => {
                 color: "#ffffff",
               }}
             >
-              <Link to="/login" className="link">
-                <Button variant="contained" color="secondary">
-                  SignIn
-                </Button>
-              </Link>
+              {/* SignIn removed */}
             </Box>
           </Toolbar>
         </AppBar>

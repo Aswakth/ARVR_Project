@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../../App.css";
-import { Link, useNavigate } from "react-router-dom";
-import LogoWithText from "../../assets/images/arvrlogo.svg";
+import { Link } from "react-router-dom";
 import {
   Box,
   Container,
@@ -16,16 +15,11 @@ import {
   Drawer,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { logout } from "../../firebase";
-import CookieIcon from "@mui/icons-material/Cookie";
+// logout removed from header; authentication handled elsewhere
 const drawerWidth = `100%`;
 
 const HomeHeader = ({ props }) => {
-  const navigate = useNavigate();
-  const handleClick = () => {
-    logout();
-    navigate("/login");
-  };
+  // navigation/handleClick removed; logout handled elsewhere
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -56,9 +50,7 @@ const HomeHeader = ({ props }) => {
               },
               alignItems: { md: "center", sm: "center", xs: "center" },
             }}
-          >
-            <img src={LogoWithText} alt="logo" width="50%"></img>
-          </Box>
+          />
         </Link>
         <List
           sx={{
@@ -76,33 +68,23 @@ const HomeHeader = ({ props }) => {
               <ListItemText primary="Diet" />
             </ListItemButton>
           </a> */}
-          <a href="/ARVR_Project/yoga" className="link" onClick={handleDrawerToggle}>
+          <Link to="/yoga" className="link" onClick={handleDrawerToggle}>
             <ListItemButton>
               <ListItemText primary="Yoga" />
             </ListItemButton>
-          </a>
-          <a href="/ARVR_Project/workout" className="link" onClick={handleDrawerToggle}>
+          </Link>
+          <Link to="/workout" className="link" onClick={handleDrawerToggle}>
             <ListItemButton>
               <ListItemText primary="Workout" />
             </ListItemButton>
-          </a>
+          </Link>
           <Divider
             color="#fff"
             sx={{
               width: "50%",
             }}
           />
-          <Link to="/Login" className="link" onClick={handleDrawerToggle}>
-            <ListItemButton>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleClick}
-              >
-                Logout
-              </Button>
-            </ListItemButton>
-          </Link>
+          {/* Logout removed per request */}
         </List>
       </Container>
       {/* Navbar */}
@@ -161,7 +143,7 @@ const HomeHeader = ({ props }) => {
                   alignItems: { md: "center", sm: "center", xs: "center" },
                 }}
               >
-                <img src={LogoWithText} alt="logo" width="50%"></img>
+                {/* logo removed */}
               </Box>
             </Link>
             <Box
@@ -180,21 +162,13 @@ const HomeHeader = ({ props }) => {
               <a href="/diet" className="link">
                 <Button variant="h6">Diet</Button>
               </a> */}
-              <a href="/ARVR/yoga" className="link">
+              <Link to="/yoga" className="link">
                 <Button variant="h6">Yoga</Button>
-              </a>
-              <a href="/ARVR/workout" className="link">
-                <Button variant="h6">Workout</Button>
-              </a>
-              <Link to="/ARVR" className="link">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={handleClick}
-                >
-                  Logout
-                </Button>
               </Link>
+              <Link to="/workout" className="link">
+                <Button variant="h6">Workout</Button>
+              </Link>
+              {/* Logout removed */}
             </Box>
           </Toolbar>
         </AppBar>

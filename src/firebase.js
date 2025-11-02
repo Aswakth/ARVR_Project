@@ -1,14 +1,8 @@
 import { initializeApp } from "firebase/app";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  getAuth,
-  signOut,
-} from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import Cookies from "js-cookie";
-import { setDoc, doc, serverTimestamp, getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
 
 // const firebaseConfig = {
 //   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -19,14 +13,15 @@ import { useNavigate } from "react-router-dom";
 //   appId: process.env.REACT_APP_FIREBASE_APP_ID,
 // };
 
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCbqMX1U9qpOkjPskzE054duE_4oqevzcE",
-  authDomain: "ar-vr-9eb5e.firebaseapp.com",
-  projectId: "ar-vr-9eb5e",
-  storageBucket: "ar-vr-9eb5e.appspot.com",
-  messagingSenderId: "694556830651",
-  appId: "1:694556830651:web:b6a86faff250c2e7d2f29e",
-  measurementId: "G-7824E3XZ7N"
+  apiKey: "AIzaSyBMVlDS5jUVemW-qCSbSISnaSkTR8J6seM",
+  authDomain: "arvr-project-aa4e0.firebaseapp.com",
+  projectId: "arvr-project-aa4e0",
+  storageBucket: "arvr-project-aa4e0.firebasestorage.app",
+  messagingSenderId: "595476315153",
+  appId: "1:595476315153:web:d59c9b99b42a1220d885b0",
+  measurementId: "G-W1XH05PVR8",
 };
 
 // Initialize Firebase
@@ -35,40 +30,16 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-export const signInWithGoogle = async () => {
-  try {
-    const googleProvider = new GoogleAuthProvider();
-    const res = await signInWithPopup(auth, googleProvider);
-
-    const accessToken = res.user.accessToken;
-    Cookies.set("uat", accessToken);
-    const uid = res.user.uid.toString();
-    Cookies.set("userID", uid);
-
-    const name = res.user.displayName;
-    const email = res.user.email;
-    const photo = res.user.photoURL;
-
-    localStorage.setItem("name", name);
-    localStorage.setItem("email", email);
-    localStorage.setItem("photo", photo);
-    const docRef = doc(db, "user", uid);
-    await setDoc(docRef, {
-      userID: uid,
-      timeStamp: serverTimestamp(),
-      name: res.user.displayName,
-    });
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
-  }
-};
+// Authentication helper removed; project uses local cookie-based login now.
 
 //   Logout Fucntion
 export const logout = () => {
-  signOut(auth);
+  try {
+    signOut(auth);
+  } catch (e) {
+    // ignore if auth signOut fails or not configured
+  }
   localStorage.clear();
-
   Cookies.remove("userID");
-  Cookies.remove("uat");
+  // 'uat' cookie deprecated/unused. If you need to clear another cookie, add it here.
 };

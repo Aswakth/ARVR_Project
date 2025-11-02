@@ -1,22 +1,17 @@
 import React, { useEffect } from "react";
 import { Container, Box, Typography, Button } from "@mui/material";
-import Header from "../components/header/header.react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 const Landing = () => {
   const navigate = useNavigate();
 
-  if (Cookies.get("uat")) {
+  if (Cookies.get("userID")) {
     navigate("/home");
-  }
-  if (!Cookies.get("userID")) {
-    navigate("/");
   }
 
   return (
     <>
-      <Header />
       {/* Hero Section */}
 
       <Container
@@ -83,7 +78,7 @@ const Landing = () => {
             With our AI powered fitness app, it will guide you with the best
             program to help you get a healthy and ideal body.
           </Typography>
-          <Link to="/login" className="link">
+          <Link to="/home" className="link">
             <Button variant="contained" color="secondary">
               Get Started
             </Button>

@@ -1,226 +1,149 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Pose } from "@mediapipe/pose";
 import * as cam from "@mediapipe/camera_utils";
 import Webcam from "react-webcam";
-import { useRef, useEffect } from "react";
 import angleBetweenThreePoints from "./angle";
 import yoga1 from "../assets/images/yogapose.png";
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Typography, Button } from "@mui/material";
 import Cookies from "js-cookie";
 import { db } from "../firebase";
 import { v4 } from "uuid";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@material-ui/core";
+
+// 🔊 Speech synthesis setup
 const speech = window.speechSynthesis;
-const speak = (count) => {
-  const object = new SpeechSynthesisUtterance(count);
-  object.lang = "en-US";
-  speech.speak(object);
+const speak = (text) => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  speech.speak(utterance);
 };
 
 const Virabhadrasana = () => {
   const navigate = useNavigate();
-  if (!Cookies.get("userID")) {
-    alert("Please Login");
-    navigate("/");
-  }
+
+  // ✅ Redirect if not logged in
+  useEffect(() => {
+    if (!Cookies.get("userID")) {
+      alert("Please login first");
+      navigate("/");
+    }
+  }, [navigate]);
+
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  let camera = null;
+  const cameraRef = useRef(null);
+  const tRef = useRef(Date.now());
 
-  var t = new Date().getTime();
+  useEffect(() => {
+    // 🧠 Called every frame from MediaPipe Pose
+    function onResult(results) {
+      if (!results?.poseLandmarks || !canvasRef.current || !webcamRef.current?.video)
+        return;
 
-  function onResult(results) {
-    if (results.poseLandmarks) {
       const position = results.poseLandmarks;
-      canvasRef.current.width = webcamRef.current.video.videoWidth;
-      canvasRef.current.height = webcamRef.current.video.videoHeight;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
 
-      const width = canvasRef.current.width;
-      const height = canvasRef.current.height;
+      canvas.width = webcamRef.current.video.videoWidth;
+      canvas.height = webcamRef.current.video.videoHeight;
 
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // 🦴 Key points for arms and legs
       const leftHand = [];
       const rightHand = [];
       const leftLeg = [];
       const rightLeg = [];
 
-      //index 11,13,15 left hand, angle range 165,185
-      //index 12,14,16 right hand, angle range 175,195
-      //index 23,25,27 left leg, angle range 245,265
-      //index 24,26,28 right leg, angle range 175,200
+      // Arms (11–16)
       for (let i = 11; i < 17; i++) {
-        let obj = {};
-        obj["x"] = position[i].x * width;
-        obj["y"] = position[i].y * height;
-        if (i % 2 === 0) {
-          rightHand.push(obj);
-        } else {
-          leftHand.push(obj);
-        }
+        const point = {
+          x: position[i].x * width,
+          y: position[i].y * height,
+        };
+        if (i % 2 === 0) rightHand.push(point);
+        else leftHand.push(point);
       }
+
+      // Legs (23–28)
       for (let i = 23; i < 29; i++) {
-        let obj = {};
-        obj["x"] = position[i].x * width;
-        obj["y"] = position[i].y * height;
-        if (i % 2 === 0) {
-          rightLeg.push(obj);
-        } else {
-          leftLeg.push(obj);
-        }
+        const point = {
+          x: position[i].x * width,
+          y: position[i].y * height,
+        };
+        if (i % 2 === 0) rightLeg.push(point);
+        else leftLeg.push(point);
       }
+
+      // 📐 Calculate joint angles
       const leftHandAngle = Math.round(angleBetweenThreePoints(leftHand));
       const rightHandAngle = Math.round(angleBetweenThreePoints(rightHand));
       const leftLegAngle = Math.round(angleBetweenThreePoints(leftLeg));
       const rightLegAngle = Math.round(angleBetweenThreePoints(rightLeg));
 
-      const canvasElement = canvasRef.current;
-      const canvasCtx = canvasElement.getContext("2d");
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      //canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height)
+      // ✅ Target pose angle ranges
+      const inRangeRightHand = rightHandAngle >= 170 && rightHandAngle <= 190;
+      const inRangeLeftHand = leftHandAngle >= 170 && leftHandAngle <= 190;
+      const inRangeRightLeg = rightLegAngle >= 170 && rightLegAngle <= 190;
+      const inRangeLeftLeg = leftLegAngle >= 110 && leftLegAngle <= 130;
 
-      let inRangeRightHand;
-      if (rightHandAngle >= 170 && rightHandAngle <= 190) {
-        inRangeRightHand = true;
-      } else {
-        inRangeRightHand = false;
-      }
+      // 🖌️ Draw skeleton
+      ctx.save();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.lineWidth = 8;
 
-      let inRangeLeftHand;
-      if (leftHandAngle >= 170 && leftHandAngle <= 190) {
-        inRangeLeftHand = true;
-      } else {
-        inRangeLeftHand = false;
-      }
-
-      let inRangeRightLeg;
-      if (rightLegAngle >= 170 && rightLegAngle <= 190) {
-        inRangeRightLeg = true;
-      } else {
-        inRangeRightLeg = false;
-      }
-
-      let inRangeLeftLeg;
-      if (leftLegAngle >= 110 && leftLegAngle <= 130) {
-        inRangeLeftLeg = true;
-      } else {
-        inRangeLeftLeg = false;
-      }
+      const drawLine = (a, b, inRange) => {
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = inRange ? "green" : "red";
+        ctx.stroke();
+      };
 
       for (let i = 0; i < 2; i++) {
-        canvasCtx.beginPath();
-        canvasCtx.lineWidth = 8;
-
-        //right hand
-        canvasCtx.moveTo(rightHand[i].x, rightHand[i].y);
-        canvasCtx.lineTo(rightHand[i + 1].x, rightHand[i + 1].y);
-        if (inRangeRightHand) {
-          canvasCtx.strokeStyle = "green";
-        } else {
-          canvasCtx.strokeStyle = "red";
-        }
-        canvasCtx.stroke();
-
-        //lefthand
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(leftHand[i].x, leftHand[i].y);
-        canvasCtx.lineTo(leftHand[i + 1].x, leftHand[i + 1].y);
-        if (inRangeLeftHand) {
-          canvasCtx.strokeStyle = "green";
-        } else {
-          canvasCtx.strokeStyle = "red";
-        }
-        canvasCtx.stroke();
-
-        //right leg
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(rightLeg[i].x, rightLeg[i].y);
-        canvasCtx.lineTo(rightLeg[i + 1].x, rightLeg[i + 1].y);
-        if (inRangeRightLeg) {
-          canvasCtx.strokeStyle = "green";
-        } else {
-          canvasCtx.strokeStyle = "red";
-        }
-        canvasCtx.stroke();
-
-        //left leg
-        canvasCtx.beginPath();
-        canvasCtx.moveTo(leftLeg[i].x, leftLeg[i].y);
-        canvasCtx.lineTo(leftLeg[i + 1].x, leftLeg[i + 1].y);
-        if (inRangeLeftLeg) {
-          canvasCtx.strokeStyle = "green";
-        } else {
-          canvasCtx.strokeStyle = "red";
-        }
-        canvasCtx.stroke();
-      }
-      for (let i = 0; i < 3; i++) {
-        canvasCtx.beginPath();
-        //right hand
-        canvasCtx.arc(rightHand[i].x, rightHand[i].y, 8, 0, Math.PI * 2);
-        //left hand
-        canvasCtx.arc(leftHand[i].x, leftHand[i].y, 8, 0, Math.PI * 2);
-
-        canvasCtx.fillStyle = "#AAFF00";
-        canvasCtx.fill();
-
-        canvasCtx.beginPath();
-        //right leg
-        canvasCtx.arc(rightLeg[i].x, rightLeg[i].y, 8, 0, Math.PI * 2);
-        //left leg
-        canvasCtx.arc(leftLeg[i].x, leftLeg[i].y, 8, 0, Math.PI * 2);
-
-        canvasCtx.fillStyle = "#AAFF00";
-        canvasCtx.fill();
+        drawLine(rightHand[i], rightHand[i + 1], inRangeRightHand);
+        drawLine(leftHand[i], leftHand[i + 1], inRangeLeftHand);
+        drawLine(rightLeg[i], rightLeg[i + 1], inRangeRightLeg);
+        drawLine(leftLeg[i], leftLeg[i + 1], inRangeLeftLeg);
       }
 
-      if (
-        !(
-          inRangeRightLeg &&
-          inRangeLeftLeg &&
-          inRangeLeftHand &&
-          inRangeRightHand
-        )
-      ) {
-        t = new Date().getTime();
+      // 🟢 Draw joints
+      const drawCircle = (p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "#AAFF00";
+        ctx.fill();
+      };
+
+      [...leftHand, ...rightHand, ...leftLeg, ...rightLeg].forEach(drawCircle);
+
+      // ⏱️ Reset timer if not in correct posture
+      if (!(inRangeRightLeg && inRangeLeftLeg && inRangeLeftHand && inRangeRightHand)) {
+        tRef.current = Date.now();
       }
 
-      canvasCtx.font = "30px aerial";
-      canvasCtx.fillText(leftHandAngle, leftHand[1].x + 20, leftHand[1].y + 20);
-      canvasCtx.fillText(
-        rightHandAngle,
-        rightHand[1].x - 120,
-        rightHand[1].y + 20
-      );
-      canvasCtx.fillText(leftLegAngle, leftLeg[1].x + 20, leftLeg[1].y + 20);
-      canvasCtx.fillText(
-        rightLegAngle,
-        rightLeg[1].x - 120,
-        rightLeg[1].y + 20
-      );
+      // 🕒 Display angles and seconds
+      const seconds = Math.round((Date.now() - tRef.current) / 1000);
+      ctx.font = "24px Arial";
+      ctx.fillStyle = "white";
+      ctx.fillText(`Left Hand: ${leftHandAngle}`, leftHand[1].x + 10, leftHand[1].y + 20);
+      ctx.fillText(`Right Hand: ${rightHandAngle}`, rightHand[1].x - 100, rightHand[1].y + 20);
+      ctx.fillText(`Left Leg: ${leftLegAngle}`, leftLeg[1].x + 10, leftLeg[1].y + 20);
+      ctx.fillText(`Right Leg: ${rightLegAngle}`, rightLeg[1].x - 100, rightLeg[1].y + 20);
+      ctx.fillText(`Seconds held: ${seconds}`, 20, 40);
+      ctx.restore();
 
-      canvasCtx.fillStyle = "white";
-      canvasCtx.font = "30px aerial";
-      const timer = canvasCtx.fillText(
-        "Seconds holded: ".concat(
-          String(Math.round((new Date().getTime() - t) / 1000))
-        ),
-        10,
-        40
-      );
-      console.log(timer);
-      speak(timer);
-      canvasCtx.restore();
+      speak(seconds);
     }
-  }
 
-  useEffect(() => {
+    // 🎯 Initialize Pose
     const pose = new Pose({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.4.1624666670/${file}`;
-      },
+      locateFile: (file) =>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.4.1624666670/${file}`,
     });
+
     pose.setOptions({
       modelComplexity: 1,
       smoothLandmarks: true,
@@ -230,106 +153,118 @@ const Virabhadrasana = () => {
 
     pose.onResults(onResult);
 
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null
-    ) {
-      camera = new cam.Camera(webcamRef.current.video, {
+    // 🎥 Setup camera
+    if (webcamRef.current && webcamRef.current.video) {
+      cameraRef.current = new cam.Camera(webcamRef.current.video, {
         onFrame: async () => {
-          await pose.send({ image: webcamRef.current.video });
+          if (webcamRef.current?.video) {
+            await pose.send({ image: webcamRef.current.video });
+          }
         },
         width: 640,
         height: 480,
       });
-      camera.start();
+      cameraRef.current.start();
     }
-  });
-  const handleClick = () => {
-    const ID = Cookies.get("userID");
-    const userTime = onResult();
-    const docRef = doc(db, `user/${ID}/virabhadrasana`, v4());
-    const repsCounter = setDoc(docRef, {
-      // timer: userTime,
-      timeStamp: serverTimestamp(),
-      uid: ID,
-    });
-    console.log(repsCounter);
+
+    return () => {
+      if (cameraRef.current?.stop) cameraRef.current.stop();
+    };
+  }, []);
+
+  // 🧾 Save yoga session
+  const handleClick = async () => {
+    try {
+      const ID = Cookies.get("userID");
+      const docRef = doc(db, `user/${ID}/virabhadrasana`, v4());
+      await setDoc(docRef, {
+        timeStamp: serverTimestamp(),
+        uid: ID,
+      });
+      console.log("✅ Pose record saved!");
+    } catch (error) {
+      console.error("❌ Firestore Error:", error);
+    }
   };
 
   return (
-    <>
-      <Container
+    <Container
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: { lg: "space-between", sm: "center", xs: "center" },
+        height: "100vh",
+        width: "100%",
+        flexDirection: { lg: "row", sm: "column", xs: "column" },
+      }}
+    >
+      {/* 🎥 Live feed with pose overlay */}
+      <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: { lg: "space-between", sm: "center", xs: "center" },
-          height: "100vh",
+          position: "relative",
+          borderRadius: "2rem",
           width: "100%",
-          flexDirection: { lg: "row", sm: "column", xs: "column" },
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            position: "relative",
-            borderRadius: "2rem",
-            width: "100%",
+        <Webcam ref={webcamRef} className="full-width" />
+        <canvas
+          ref={canvasRef}
+          className="full-width"
+          style={{
+            position: "absolute",
+            width: "80%",
           }}
+        />
+      </Box>
+
+      {/* 🧘 Right panel - instructions */}
+      <Box
+        sx={{
+          width: { lg: "40%", xs: "80%" },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "secondary",
+          backgroundColor: "#fff",
+          borderRadius: "2rem",
+          mt: { xs: 3, lg: 0 },
+          p: 2,
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, textAlign: "center" }}
+          color="primary"
         >
-          <Webcam ref={webcamRef} className="full-width" />
-          <canvas
-            ref={canvasRef}
-            className="full-width"
-            style={{
-              position: "absolute",
-              width: "80%",
-            }}
-          />
-        </Box>
+          Try to mimic this posture to perform <strong>Virabhadrasana</strong>
+        </Typography>
 
         <Box
           sx={{
-            width: "40%",
+            width: "70%",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
             justifyContent: "center",
-            color: "secondary",
-            backgroundColor: "#fff",
-            borderRadius: "2rem",
+            alignItems: "center",
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, textAlign: "center", padding: "1rem" }}
-            color="primary"
-          >
-            Try to mimic this posture to perform Virabhadrasana
-          </Typography>
-          <Box
-            sx={{
-              width: "70%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img src={yoga1} alt="Yoga 2" width="100%"></img>
-          </Box>
-          <Link to="/yoga" className="link">
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              sx={{ cursor: "pointer", background: "#17edf7" }}
-              onClick={handleClick}
-            >
-              back
-            </Button>
-          </Link>
+          <img src={yoga1} alt="Yoga Pose" width="100%" />
         </Box>
-      </Container>
-    </>
+
+        <Link to="/yoga" className="link">
+          <Button
+            size="large"
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3, background: "#17edf7" }}
+            onClick={handleClick}
+          >
+            Back
+          </Button>
+        </Link>
+      </Box>
+    </Container>
   );
 };
 

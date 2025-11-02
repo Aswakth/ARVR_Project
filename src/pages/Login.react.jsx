@@ -1,36 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, signInWithGoogle } from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { Container, Box, Typography, Button } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
-import login from "../assets/images/login.svg";
+import Cookies from "js-cookie";
+import { Container, Box, Typography, Button, TextField } from "@mui/material";
+import loginImg from "../assets/images/login.svg";
 import Header from "../components/header/header.react";
-import CircularProgress from "@mui/material/CircularProgress";
+
 function Login() {
-  const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (loading) {
-      <CircularProgress />;
-      return;
-    }
-    if (user) navigate("/home");
-  }, [user, loading, navigate]);
-  const handleClick = async () => {
-    // const userData = await signInWithGoogle();
-    // console.log(userData);
-    // const uid = Cookies.get("userId");
-    // localStorage.setItem("userID", userData.uid);
-    // localStorage.setItem("uat", userData.accessToken);
-    // const docRef = doc(db, "bochya", uid);
-    // const userDataLog = await setDoc(docRef, {
-    //   userID: uid,
-    //   timeStamp: serverTimestamp(),
-    // });
-    // console.log(userDataLog);
-    signInWithGoogle();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleLogin = () => {
+    const uid = Math.random().toString(36).slice(2, 10);
+    Cookies.set("userID", uid, { expires: 7 });
+    localStorage.setItem("name", name || "User");
+    localStorage.setItem("email", email || "");
+    localStorage.setItem("photo", "");
+    navigate("/home");
   };
+
   return (
     <>
       <Header />
@@ -47,12 +35,8 @@ function Login() {
         }}
         className="glassmorphism"
       >
-        <Box
-          sx={{
-            width: { lg: "40%", sm: "50%", xs: "100%" },
-          }}
-        >
-          <img src={login} alt="login" width="100%" />
+        <Box sx={{ width: { lg: "40%", sm: "50%", xs: "100%" } }}>
+          <img src={loginImg} alt="login" width="100%" />
         </Box>
         <Box
           sx={{
@@ -68,35 +52,30 @@ function Login() {
           <Typography
             variant="h4"
             color="secondary"
-            sx={{
-              fontSize: { lg: "2rem", xs: "1.5rem" },
-            }}
+            sx={{ fontSize: { lg: "2rem", xs: "1.5rem" } }}
           >
-            Verify Identity
+            Sign in (Local)
           </Typography>
-          <Typography
-            variant="h6"
-            color="#fff"
-            sx={{
-              textAlign: "center",
-              fontSize: { lg: "1.5rem", xs: "1rem" },
-            }}
-          >
-            Verify your identity to securely access your account
-          </Typography>
+          <TextField
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+          />
           <Box>
             <Button
               variant="contained"
               color="secondary"
-              sx={{
-                display: "flex",
-                gap: "0.5rem",
-              }}
-              onClick={handleClick}
+              onClick={handleLogin}
               size="small"
             >
-              <GoogleIcon />
-              Login with Google
+              Continue
             </Button>
           </Box>
         </Box>

@@ -17,7 +17,6 @@ import Trikonasana from "./components/trikonasana";
 import Workout from "./pages/Workout.react";
 import AdhoMukhaSvanasana from "./components/AdhoMukhaSvanasana";
 import { Container, Box, Typography } from "@mui/material";
-import logo from "./assets/images/logo-with-text.svg";
 import Diet from "./pages/Diet.react";
 
 import BicepCurls from "./components/BicepCurls";
@@ -29,11 +28,12 @@ import BodyMeasurmnets from "./pages/BodyMeasurements.react";
 function App() {
   const navigate = useNavigate();
   const location = window.location.pathname;
-  if (location === "/yoga" && location === "/bicepcurl") {
-    const videoOutput = document.getElementsByClassName("input_video");
-    const canvas = document.getElementsByClassName("output_canvas");
-    videoOutput.style.display = "flex";
-    canvas.style.display = "flex";
+  // If the page has video/canvas elements and we're on yoga or bicep curls, make them visible
+  if (location === "/yoga" || location === "/bicepcurls") {
+    const videoOutput = document.getElementsByClassName("input_video")[0];
+    const canvas = document.getElementsByClassName("output_canvas")[0];
+    if (videoOutput) videoOutput.style.display = "flex";
+    if (canvas) canvas.style.display = "flex";
   }
 
   return (
