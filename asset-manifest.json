@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/ARVR_Project/static/css/main.9b7ad6da.css",
-    "main.js": "/ARVR_Project/static/js/main.c78cbaae.js",
+    "main.js": "/ARVR_Project/static/js/main.63f4cebb.js",
     "static/media/finger-push-up.gif": "/ARVR_Project/static/media/finger-push-up.7c1654b3cf899a1fab91.gif",
     "static/media/squat.gif": "/ARVR_Project/static/media/squat.d3f06303a43dd8041057.gif",
     "static/media/dumbbell-bicep-curls.gif": "/ARVR_Project/static/media/dumbbell-bicep-curls.8ba64e8f4fa3ab5295d4.gif",
@@ -21,10 +21,10 @@
     "static/media/arvrlogo.svg": "/ARVR_Project/static/media/arvrlogo.931777032b7db23559b40c784627bb91.svg",
     "index.html": "/ARVR_Project/index.html",
     "main.9b7ad6da.css.map": "/ARVR_Project/static/css/main.9b7ad6da.css.map",
-    "main.c78cbaae.js.map": "/ARVR_Project/static/js/main.c78cbaae.js.map"
+    "main.63f4cebb.js.map": "/ARVR_Project/static/js/main.63f4cebb.js.map"
   },
   "entrypoints": [
     "static/css/main.9b7ad6da.css",
-    "static/js/main.c78cbaae.js"
+    "static/js/main.63f4cebb.js"
   ]
 }
