@@ -76,12 +76,12 @@ const HomeHeader = ({ props }) => {
               <ListItemText primary="Diet" />
             </ListItemButton>
           </a> */}
-          <a href="/ARVR/yoga" className="link" onClick={handleDrawerToggle}>
+          <a href="/ARVR_Project/yoga" className="link" onClick={handleDrawerToggle}>
             <ListItemButton>
               <ListItemText primary="Yoga" />
             </ListItemButton>
           </a>
-          <a href="/ARVR/workout" className="link" onClick={handleDrawerToggle}>
+          <a href="/ARVR_Project/workout" className="link" onClick={handleDrawerToggle}>
             <ListItemButton>
               <ListItemText primary="Workout" />
             </ListItemButton>
