@@ -2,7 +2,7 @@
 # ARVR project
 
 # Demo: 
-<a href="https://akhshaymahesh.github.io/ARVR"> Check Out<a/>
+<a href="https://aswakth.github.io/ARVR_Project"> Check Out<a/>
 
 ## Abstract
 - Augmented Reality (AR) technology for an immersive and interactive fitness experience
