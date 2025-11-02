@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/ARVR_Project/static/css/main.9b7ad6da.css",
+    "main.js": "/ARVR_Project/static/js/main.c78cbaae.js",
+    "static/media/finger-push-up.gif": "/ARVR_Project/static/media/finger-push-up.7c1654b3cf899a1fab91.gif",
+    "static/media/squat.gif": "/ARVR_Project/static/media/squat.d3f06303a43dd8041057.gif",
+    "static/media/dumbbell-bicep-curls.gif": "/ARVR_Project/static/media/dumbbell-bicep-curls.8ba64e8f4fa3ab5295d4.gif",
+    "static/media/Crunch.gif": "/ARVR_Project/static/media/Crunch.eae0336c4c5fd0691ce8.gif",
+    "static/media/login.svg": "/ARVR_Project/static/media/login.ffae51ca407929f2a53f47806df355a7.svg",
+    "static/media/reminder_dashboard.svg": "/ARVR_Project/static/media/reminder_dashboard.b862fc273f97b3fea01e2b287d24aeda.svg",
+    "static/media/motivation.svg": "/ARVR_Project/static/media/motivation.a4abab6e057ed0305e80290a01f0f9db.svg",
+    "static/media/cookies.svg": "/ARVR_Project/static/media/cookies.4587edc709e0426557685d7605d4390c.svg",
+    "static/media/logo-with-text.svg": "/ARVR_Project/static/media/logo-with-text.bf5839d367824d0136623570d8a4fefe.svg",
+    "static/media/initialIMG.svg": "/ARVR_Project/static/media/initialIMG.68b5ba3cba7e77b6e30197108b421802.svg",
+    "static/media/AdhoMukhaSvanasana.png": "/ARVR_Project/static/media/AdhoMukhaSvanasana.41d8a568deaf6496773f.png",
+    "static/media/trikonasana.png": "/ARVR_Project/static/media/trikonasana.851a4eb272add27304e4.png",
+    "static/media/popular.svg": "/ARVR_Project/static/media/popular.70638f70d25e29a731e62a1446352457.svg",
+    "service-worker.js": "/ARVR_Project/service-worker.js",
+    "static/media/crunches.png": "/ARVR_Project/static/media/crunches.46ef519d96ce521c9709.png",
+    "static/media/yogapose.png": "/ARVR_Project/static/media/yogapose.9a2b443bf5cc59f1da8d.png",
+    "static/media/arvrlogo.svg": "/ARVR_Project/static/media/arvrlogo.931777032b7db23559b40c784627bb91.svg",
+    "index.html": "/ARVR_Project/index.html",
+    "main.9b7ad6da.css.map": "/ARVR_Project/static/css/main.9b7ad6da.css.map",
+    "main.c78cbaae.js.map": "/ARVR_Project/static/js/main.c78cbaae.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9b7ad6da.css",
+    "static/js/main.c78cbaae.js"
+  ]
+}
